@@ -5,8 +5,13 @@ using UnityEngine;
 
 static public class Constants
 {
-    static class Tag
+    public static class Tag
     {
         public const string Player = "Player";
+    }
+
+    public static class LayerMask
+    {
+        public const string Ground = "Ground";
     }
 }
