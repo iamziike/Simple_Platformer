@@ -13,17 +13,6 @@ public class PlayerMovement : MonoBehaviour
 
     public bool isMoving => Utils.ChangeToBoolValue(velocity.x);
 
-    public Vector2 sanitizedVelocity
-    {
-        get
-        {
-            float x = velocity.x != 0 ? Mathf.Sign(velocity.x) : 0;
-            float y = velocity.y != 0 ? Mathf.Sign(velocity.y) : 0;
-            return new Vector2(x, y);
-        }
-    }
-
-
     void Awake()
     {
         rigidbody2D = GetComponent<Rigidbody2D>();
