@@ -9,6 +9,7 @@ public class PlayerWallSlide : MonoBehaviour
 
     private PlayerVisuals playerVisuals;
     private PlayerCollision playerCollision;
+    private PlayerWallJump playerWallJump;
     private PlayerMovement playerMovement;
 
     private void Awake()
@@ -16,11 +17,12 @@ public class PlayerWallSlide : MonoBehaviour
         playerCollision = GetComponent<PlayerCollision>();
         playerVisuals = GetComponent<PlayerVisuals>();
         playerMovement = GetComponent<PlayerMovement>();
+        playerWallJump = GetComponent<PlayerWallJump>();
     }
 
-    private void LateUpdate()
+    private void Update()
     {
-        if (canSlide)
+        if (canSlide && !playerWallJump.isWallJumping)
         {
             isSliding = true;
             SlideWall();
@@ -35,6 +37,6 @@ public class PlayerWallSlide : MonoBehaviour
 
     private void SlideWall()
     {
-        playerMovement.Move(new Vector2(playerMovement.velocity.x, wallSlideSpeed));
+        playerMovement.MoveTowards(new Vector2(playerMovement.velocity.x, wallSlideSpeed));
     }
 }

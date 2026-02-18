@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     {
         if (playerState.isAllowedDefaultMovement && !playerCollision.isDetectedWall(playerInput.horizontalDirection))
         {
-            playerMovement.Move(new Vector2(playerInput.horizontalDirection * playerMovement.speed, playerMovement.velocity.y));
+            playerMovement.Run(new Vector2(playerInput.horizontalDirection, playerMovement.velocity.y));
         }
 
         if (playerState.isAllowedDefaultJump)
@@ -36,8 +36,9 @@ public class Player : MonoBehaviour
             playerJump.TryJump(playerCollision.isOnSurface, playerInput.isJumpPressed);
         }
 
-        playerAnimation.ApplyMovementAnimation(playerMovement.velocity.x);
-        playerAnimation.ApplyJumpAnimation(playerMovement.velocity.y);
         playerVisuals.ApplyFaceDirection(new Vector2(playerInput.horizontalDirection, 0));
+        playerAnimation.ApplyMovementAnimation(playerMovement.velocity.x);
+        // When applying velocity to x axis when running for some reason the player y velocity is not 0 hence the below
+        playerAnimation.ApplyJumpAnimation(playerCollision.isOnSurface ? 0 : playerMovement.velocity.y);
     }
 }

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public enum PlayerStateField
 {
     isAllowedDefaultMovement,
@@ -12,6 +11,10 @@ public enum PlayerStateField
 
 public class PlayerState : MonoBehaviour
 {
+    [Header("Player Life")]
+    [SerializeField] readonly int _maxHealth = 3;
+    [SerializeField] int _currentHealth = 3;
+
     [SerializeField] public bool isAllowedDefaultMovement { get; private set; } = true;
     [SerializeField] public bool isAllowedDefaultJump { get; private set; } = true;
     [SerializeField] public bool canUseAbility { get; private set; } = false;
@@ -39,15 +42,25 @@ public class PlayerState : MonoBehaviour
         }
     }
 
-    public void PauseDefaultMovement(float duration)
+    #region Default Movement
+
+    public IEnumerator PauseDefaultMovement(float duration, System.Action onResume = null)
     {
         isAllowedDefaultMovement = false;
-        StartCoroutine(ResumeDefaultMovementAfterDelay(duration));
-    }
-
-    private IEnumerator ResumeDefaultMovementAfterDelay(float duration)
-    {
         yield return new WaitForSeconds(duration);
         isAllowedDefaultMovement = true;
+        onResume?.Invoke();
     }
+
+    #endregion
+
+    #region Health
+
+    public int currentHealth
+    {
+        get => _currentHealth;
+        set => _currentHealth = Mathf.Clamp(value, 0, _maxHealth);
+    }
+
+    #endregion
 }

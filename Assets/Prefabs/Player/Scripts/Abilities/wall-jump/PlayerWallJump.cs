@@ -9,7 +9,7 @@ public class PlayerWallJump : MonoBehaviour
     PlayerVisuals playerVisuals;
     PlayerCollision playerCollision;
     [SerializeField] Vector2 wallJumpForce = new Vector2(7, 18);
-    [SerializeField] public float pauseDefaultMovementDuration = 0.3f;
+    [SerializeField] public bool isWallJumping { get; private set; } = false;
 
     void Awake()
     {
@@ -28,11 +28,19 @@ public class PlayerWallJump : MonoBehaviour
 
     public void ApplyWallJump()
     {
+        float duration = 0.3f;
+
         if (playerCollision.isOnWall(playerVisuals.faceDirection.x) && playerInput.isJumpPressed)
         {
-            playerState.PauseDefaultMovement(pauseDefaultMovementDuration);
             Vector2 directionMovement = new Vector2(playerVisuals.faceDirection.x * wallJumpForce.x * -1, wallJumpForce.y);
-            playerMovement.Move(directionMovement);
+
+            isWallJumping = true;
+            StartCoroutine(playerState.PauseDefaultMovement(duration, () =>
+            {
+                isWallJumping = false;
+            }));
+
+            playerMovement.MoveTowards(directionMovement);
             playerVisuals.FlipX();
             playerJump.ResetJumpCount();
             playerJump.IncrementJumpCount();

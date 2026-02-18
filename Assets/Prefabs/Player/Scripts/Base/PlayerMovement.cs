@@ -19,8 +19,13 @@ public class PlayerMovement : MonoBehaviour
         rigidbody2D.gravityScale = 5f;
     }
 
-    public void Move(Vector2 movement)
+    public void MoveTowards(Vector2 movement)
     {
         rigidbody2D.velocity = new Vector2(movement.x, movement.y);
+    }
+
+    public void Run(Vector2 movement)
+    {
+        rigidbody2D.velocity = new Vector2(movement.x * speed, movement.y);
     }
 }
