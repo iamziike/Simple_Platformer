@@ -8,7 +8,8 @@ public class PlayerCollision : MonoBehaviour
 
     [SerializeField] public bool isFalling { get; private set; }
     [SerializeField] public bool isOnSurface { get; private set; }
-    [SerializeField] public float wallCheckDistance = 0.8f;
+    [SerializeField] public float groundCheckDistance = 1.05f;
+    [SerializeField] public float wallCheckDistance = 0.6f;
     [SerializeField] public float wallDirection { get; private set; }
 
     void Awake()
@@ -37,6 +38,8 @@ public class PlayerCollision : MonoBehaviour
             wallDirection = 0;
             return false;
         }
+
+        // show raycast for debugging
     }
 
     public bool isOnWall(float direction)
@@ -46,8 +49,11 @@ public class PlayerCollision : MonoBehaviour
 
     void HandleDetectGround()
     {
-        float checkPoint = 0.01f;
-        isOnSurface = rigidbody2D.velocity.y < checkPoint && rigidbody2D.velocity.y > -checkPoint;
+        bool isNoVelocity = rigidbody2D.velocity.y < 0.01 && rigidbody2D.velocity.y > -0.01;
+        Vector2 origin = transform.position;
+        Vector2 directionVector = Vector2.down;
+        RaycastHit2D hit = Physics2D.Raycast(origin, directionVector, groundCheckDistance, LayerMask.GetMask(Constants.LayerMask.Ground));
+        isOnSurface = hit.collider != null && isNoVelocity;
     }
 
     void HandleDetectFalling()
