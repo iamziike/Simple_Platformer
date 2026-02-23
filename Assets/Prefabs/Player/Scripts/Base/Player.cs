@@ -13,8 +13,30 @@ public class Player : MonoBehaviour
     public PlayerVisuals playerVisuals;
     public PlayerAnimation playerAnimation;
 
+    public Vector2 LastPosition
+    {
+        get
+        {
+
+            return new Vector2(PlayerPrefs.GetFloat("LastPositionX", transform.position.x), PlayerPrefs.GetFloat("LastPositionY", transform.position.y));
+        }
+        set
+        {
+            PlayerPrefs.SetFloat("LastPositionX", value.x);
+            PlayerPrefs.SetFloat("LastPositionY", value.y);
+        }
+    }
+
+    public void ClearLastPosition()
+    {
+        PlayerPrefs.DeleteKey("LastPositionX");
+        PlayerPrefs.DeleteKey("LastPositionY");
+    }
+
     void Awake()
     {
+        HandleLoadIn();
+
         playerInput = GetComponent<PlayerInput>();
         playerJump = GetComponent<PlayerJump>();
         playerMovement = GetComponent<PlayerMovement>();
@@ -41,4 +63,30 @@ public class Player : MonoBehaviour
         // When applying velocity to x axis when running for some reason the player y velocity is not 0 hence the below
         playerAnimation.ApplyJumpAnimation(playerCollision.isOnSurface ? 0 : playerMovement.velocity.y);
     }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag(Constants.Tag.Checkpoint))
+        {
+            LastPosition = other.transform.position;
+            Checkpoint checkpoint = other.GetComponent<Checkpoint>();
+
+            if (checkpoint.CheckpointType == CheckpointType.End)
+            {
+                HandleDeath();
+                ClearLastPosition();
+            }
+        }
+    }
+
+    void HandleLoadIn()
+    {
+        transform.position = LastPosition;
+    }
+
+    void HandleDeath()
+    {
+        // 
+    }
+
 }
