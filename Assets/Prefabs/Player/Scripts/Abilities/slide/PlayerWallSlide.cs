@@ -7,22 +7,20 @@ public class PlayerWallSlide : MonoBehaviour
     [SerializeField] public float wallSlideSpeed = -2f;
     [SerializeField] public bool isSliding { get; private set; } = false;
 
-    private PlayerVisuals playerVisuals;
-    private PlayerCollision playerCollision;
-    private PlayerWallJump playerWallJump;
-    private PlayerMovement playerMovement;
+    private PlayerCollision collision;
+    private PlayerWallJump wallJump;
+    private PlayerMovement movement;
 
     private void Awake()
     {
-        playerCollision = GetComponent<PlayerCollision>();
-        playerVisuals = GetComponent<PlayerVisuals>();
-        playerMovement = GetComponent<PlayerMovement>();
-        playerWallJump = GetComponent<PlayerWallJump>();
+        collision = GetComponent<PlayerCollision>();
+        movement = GetComponent<PlayerMovement>();
+        wallJump = GetComponent<PlayerWallJump>();
     }
 
     private void Update()
     {
-        if (canSlide && !playerWallJump.isWallJumping)
+        if (canSlide && !wallJump.isWallJumping)
         {
             isSliding = true;
             SlideWall();
@@ -33,10 +31,10 @@ public class PlayerWallSlide : MonoBehaviour
         }
     }
 
-    public bool canSlide => playerCollision.isFalling && playerCollision.isOnWall(playerVisuals.faceDirection.x);
+    public bool canSlide => collision.isFalling && collision.isOnWall(collision.faceDirection.x);
 
     private void SlideWall()
     {
-        playerMovement.MoveTowards(new Vector2(playerMovement.velocity.x, wallSlideSpeed));
+        movement.MoveTowards(new Vector2(movement.velocity.x, wallSlideSpeed));
     }
 }

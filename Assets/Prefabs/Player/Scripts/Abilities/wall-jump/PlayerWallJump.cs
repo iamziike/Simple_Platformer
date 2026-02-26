@@ -2,23 +2,13 @@ using UnityEngine;
 
 public class PlayerWallJump : MonoBehaviour
 {
-    PlayerState playerState;
-    PlayerMovement playerMovement;
-    PlayerInput playerInput;
-    PlayerJump playerJump;
-    PlayerVisuals playerVisuals;
-    PlayerCollision playerCollision;
+    Player player;
     [SerializeField] Vector2 wallJumpForce = new Vector2(7, 18);
     [SerializeField] public bool isWallJumping { get; private set; } = false;
 
     void Awake()
     {
-        playerMovement = GetComponent<PlayerMovement>();
-        playerInput = GetComponent<PlayerInput>();
-        playerJump = GetComponent<PlayerJump>();
-        playerCollision = GetComponent<PlayerCollision>();
-        playerState = GetComponent<PlayerState>();
-        playerVisuals = GetComponent<PlayerVisuals>();
+        player = GetComponent<Player>();
     }
 
     void LateUpdate()
@@ -30,20 +20,20 @@ public class PlayerWallJump : MonoBehaviour
     {
         float duration = 0.3f;
 
-        if (playerCollision.isOnWall(playerVisuals.faceDirection.x) && playerInput.isJumpPressed)
+        if (player.collision.isOnWall(player.collision.faceDirection.x) && player.input.isJumpPressed)
         {
-            Vector2 directionMovement = new Vector2(playerVisuals.faceDirection.x * wallJumpForce.x * -1, wallJumpForce.y);
+            Vector2 directionMovement = new Vector2(player.collision.faceDirection.x * wallJumpForce.x * -1, wallJumpForce.y);
 
             isWallJumping = true;
-            StartCoroutine(playerState.PauseDefaultMovement(duration, () =>
+            StartCoroutine(player.PauseDefaultMovement(duration, () =>
             {
                 isWallJumping = false;
             }));
 
-            playerMovement.MoveTowards(directionMovement);
-            playerVisuals.FlipX();
-            playerJump.ResetJumpCount();
-            playerJump.IncrementJumpCount();
+            player.movement.MoveTowards(directionMovement);
+            player.collision.FlipX();
+            player.jump.ResetJumpCount();
+            player.jump.IncrementJumpCount();
         }
     }
 }

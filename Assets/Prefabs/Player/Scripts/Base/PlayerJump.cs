@@ -6,7 +6,7 @@ public class PlayerJump : MonoBehaviour
 {
     Rigidbody2D rigidbody2D;
 
-    [SerializeField] float jumpForce = 15;
+    [SerializeField] readonly public float jumpForce = 15;
     [SerializeField] int jumpCount = 0;
     [SerializeField] int jumpLimit = 2;
 

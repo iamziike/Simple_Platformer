@@ -9,6 +9,7 @@ static public class Constants
     {
         public const string Player = "Player";
         public const string Checkpoint = "Checkpoint";
+        public const string Enemy = "Enemy";
     }
 
     public static class LayerMask

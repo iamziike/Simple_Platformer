@@ -5,16 +5,16 @@ using UnityEngine;
 public class PlayerWallSlideAnimation : MonoBehaviour
 {
     Animator animator;
-    PlayerWallSlide playerWallSlide;
+    PlayerWallSlide wallSlide;
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
-        playerWallSlide = GetComponent<PlayerWallSlide>();
+        wallSlide = GetComponent<PlayerWallSlide>();
     }
 
     private void Update()
     {
-        animator.SetBool("isWallSliding", playerWallSlide.isSliding);
+        animator.SetBool("isWallSliding", wallSlide.isSliding);
     }
 }

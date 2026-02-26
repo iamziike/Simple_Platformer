@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerAnimation : MonoBehaviour
+public class WalkingEnemyAnimation : MonoBehaviour
 {
     Animator animator;
 
@@ -16,13 +16,8 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetFloat("xMovement", x);
     }
 
-    public void ApplyJumpAnimation(float y)
+    public void ApplyDamageTakenAnimation()
     {
-        animator.SetFloat("yMovement", y);
-    }
-
-    public void ApplyKnockBackAnimation()
-    {
-        animator.SetTrigger("KnockBack");
+        animator.SetTrigger("DamageTaken");
     }
 }

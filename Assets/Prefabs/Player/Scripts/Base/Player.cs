@@ -1,23 +1,26 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public PlayerState playerState;
-    public PlayerInput playerInput;
-    public PlayerJump playerJump;
-    public PlayerMovement playerMovement;
-    public PlayerCollision playerCollision;
-    public PlayerVisuals playerVisuals;
-    public PlayerAnimation playerAnimation;
+    [Header("Player Life")]
+    [SerializeField] readonly int _maxHealth = 3;
+    [SerializeField] int _currentHealth = 3;
+
+    [SerializeField] public bool isAllowedDefaultMovement { get; private set; } = true;
+    [SerializeField] public bool isAllowedDefaultJump { get; private set; } = true;
+    [SerializeField] public bool canUseAbility { get; private set; } = false;
+
+    public PlayerInput input;
+    public PlayerJump jump;
+    public PlayerMovement movement;
+    public PlayerCollision collision;
+    public PlayerAnimation animation;
 
     public Vector2 LastPosition
     {
         get
         {
-
             return new Vector2(PlayerPrefs.GetFloat("LastPositionX", transform.position.x), PlayerPrefs.GetFloat("LastPositionY", transform.position.y));
         }
         set
@@ -37,31 +40,33 @@ public class Player : MonoBehaviour
     {
         HandleLoadIn();
 
-        playerInput = GetComponent<PlayerInput>();
-        playerJump = GetComponent<PlayerJump>();
-        playerMovement = GetComponent<PlayerMovement>();
-        playerCollision = GetComponent<PlayerCollision>();
-        playerAnimation = GetComponent<PlayerAnimation>();
-        playerState = GetComponent<PlayerState>();
-        playerVisuals = GetComponent<PlayerVisuals>();
+        input = GetComponent<PlayerInput>();
+        jump = GetComponent<PlayerJump>();
+        movement = GetComponent<PlayerMovement>();
+        collision = GetComponent<PlayerCollision>();
+        animation = GetComponent<PlayerAnimation>();
     }
 
     void LateUpdate()
     {
-        if (playerState.isAllowedDefaultMovement && !playerCollision.isDetectedWall(playerInput.horizontalDirection))
+        if (isAllowedDefaultMovement && !collision.isDetectedWall(input.horizontalDirection))
         {
-            playerMovement.Run(new Vector2(playerInput.horizontalDirection, playerMovement.velocity.y));
+            movement.Run(new Vector2(input.horizontalDirection, movement.velocity.y));
         }
 
-        if (playerState.isAllowedDefaultJump)
+        if (isAllowedDefaultJump)
         {
-            playerJump.TryJump(playerCollision.isOnSurface, playerInput.isJumpPressed);
+            jump.TryJump(collision.isOnSurface, input.isJumpPressed);
         }
 
-        playerVisuals.ApplyFaceDirection(new Vector2(playerInput.horizontalDirection, 0));
-        playerAnimation.ApplyMovementAnimation(playerMovement.velocity.x);
+        if (input.horizontalDirection != 0 && input.horizontalDirection != collision.faceDirection.x)
+        {
+            collision.FlipX();
+        }
+
+        animation.ApplyMovementAnimation(movement.velocity.x);
         // When applying velocity to x axis when running for some reason the player y velocity is not 0 hence the below
-        playerAnimation.ApplyJumpAnimation(playerCollision.isOnSurface ? 0 : playerMovement.velocity.y);
+        animation.ApplyJumpAnimation(collision.isOnSurface ? 0 : movement.velocity.y);
     }
 
     void OnTriggerEnter2D(Collider2D other)
@@ -79,6 +84,66 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        Vector2 collisionDirection = other.GetContact(0).normal;
+        bool isOnTopOfObject = collisionDirection.y == 1;
+
+        if (other.gameObject.CompareTag(Constants.Tag.Enemy))
+        {
+            if (isOnTopOfObject)
+            {
+                Enemy enemy = other.gameObject.GetComponent<Enemy>();
+                enemy?.HandleDamageTaken();
+                movement.MoveTowards(new Vector2(movement.velocity.x, jump.jumpForce / 1.5f));
+            }
+            else
+            {
+                HandleDamageTaken(collisionDirection);
+            }
+        }
+    }
+
+    #region Pause Actions
+
+    public IEnumerator PauseDefaultMovement(float duration, System.Action onResume = null)
+    {
+        isAllowedDefaultMovement = false;
+        yield return new WaitForSeconds(duration);
+        isAllowedDefaultMovement = true;
+        onResume?.Invoke();
+    }
+
+    #endregion
+
+    #region Damage
+
+    public int currentHealth
+    {
+        get => _currentHealth;
+        set => _currentHealth = Mathf.Clamp(value, 0, _maxHealth);
+    }
+
+    void HandleGiveDamage()
+    {
+        // 
+    }
+
+    void HandleDamageTaken(Vector2 colliderLocation)
+    {
+        // currentHealth--;
+
+        // if (currentHealth <= 0)
+        // {
+        //     HandleDeath();
+        // }
+
+        float duration = 0.3f;
+        StartCoroutine(PauseDefaultMovement(duration));
+        movement.KnockBack(colliderLocation);
+        animation.ApplyKnockBackAnimation();
+    }
+
     void HandleLoadIn()
     {
         transform.position = LastPosition;
@@ -89,4 +154,5 @@ public class Player : MonoBehaviour
         // 
     }
 
+    #endregion
 }
