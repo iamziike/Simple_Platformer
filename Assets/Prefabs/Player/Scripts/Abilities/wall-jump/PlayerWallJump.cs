@@ -20,7 +20,7 @@ public class PlayerWallJump : MonoBehaviour
     {
         float duration = 0.3f;
 
-        if (player.collision.isOnWall(player.collision.faceDirection.x) && player.input.isJumpPressed)
+        if (player.collision.isOnWall && player.input.isJumpPressed)
         {
             Vector2 directionMovement = new Vector2(player.collision.faceDirection.x * wallJumpForce.x * -1, wallJumpForce.y);
 

@@ -20,18 +20,19 @@ public class PlayerWallSlide : MonoBehaviour
 
     private void Update()
     {
+        if (collision.isOnSurface || !canSlide)
+        {
+            isSliding = false;
+        }
+
         if (canSlide && !wallJump.isWallJumping)
         {
             isSliding = true;
             SlideWall();
         }
-        else
-        {
-            isSliding = false;
-        }
     }
 
-    public bool canSlide => collision.isFalling && collision.isOnWall(collision.faceDirection.x);
+    public bool canSlide => collision.isFalling && collision.isOnWall;
 
     private void SlideWall()
     {

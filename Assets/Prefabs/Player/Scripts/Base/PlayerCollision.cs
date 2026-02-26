@@ -26,7 +26,7 @@ public class PlayerCollision : MonoBehaviour
         HandleDetectGround();
         HandleDetectFalling();
     }
-    public bool isDetectedWall(float direction)
+    public bool isDetectedWallOnX(float direction)
     {
         return Utils.isDetectedWallOnX(collider, direction, wallCheckDistance, LayerMask.GetMask(Constants.LayerMask.Ground));
     }
@@ -37,9 +37,9 @@ public class PlayerCollision : MonoBehaviour
         Utils.FlipX(gameObject);
     }
 
-    public bool isOnWall(float direction)
+    public bool isOnWall
     {
-        return isDetectedWall(direction) && !isOnSurface;
+        get { return isDetectedWallOnX(faceDirection.x) && !isOnSurface; }
     }
 
     void HandleDetectGround()
@@ -53,9 +53,8 @@ public class PlayerCollision : MonoBehaviour
         isFalling = rigidbody2D.velocity.y < -checkPoint;
     }
 
-    // void OnDrawGizmos()
-    // {
-    //     Utils.DrawDetectedGroundGizmos(collider, groundCheckDistance, isOnSurface);
-    //     Utils.DrawDetectedGroundEdgeGizmos(collider, groundCheckDistance, isOnSurface);
-    // }
+    void OnDrawGizmos()
+    {
+        Utils.DrawDetectedWallGizmos(collider, wallCheckDistance, isDetectedWallOnX(faceDirection.x), faceDirection.x);
+    }
 }

@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
 
     void LateUpdate()
     {
-        if (isAllowedDefaultMovement && !collision.isDetectedWall(input.horizontalDirection))
+        if (isAllowedDefaultMovement && !collision.isDetectedWallOnX(input.horizontalDirection))
         {
             movement.Run(new Vector2(input.horizontalDirection, movement.velocity.y));
         }

@@ -30,23 +30,25 @@ static public class Utils
         gameObject.transform.localScale = localScale;
     }
 
-    public static bool isDetectedWallOnX(Collider2D collider, float direction, float wallCheckDistance, LayerMask layerMask)
+    public static bool isDetectedWallOnX(Collider2D col, float direction, float wallCheckDistance, LayerMask layerMask)
     {
-        Vector2 origin = collider.bounds.center;
+        if (col == null) return false;
+
+        Vector2 origin = col.bounds.center;
         Vector2 directionVector = new Vector2(direction, 0);
         RaycastHit2D hit = Physics2D.Raycast(origin, directionVector, wallCheckDistance, layerMask);
         return hit.collider != null;
     }
 
-    public static bool isDetectedGround(Collider2D collider, Vector2 velocity, float groundCheckDistance, LayerMask layerMask)
+    public static bool isDetectedGround(Collider2D col, Vector2 velocity, float groundCheckDistance, LayerMask layerMask)
     {
+        if (col == null) return false;
+
         float yVelocity = velocity.y;
         bool isNoVelocity = yVelocity < 0.01 && yVelocity > -0.01;
-        Transform transform = collider.transform;
 
-        // use boxcast to detect ground instead of raycast to prevent false negative when player is moving downwards
-        Vector2 boxSize = new Vector2(collider.bounds.size.x, collider.bounds.size.y);
-        Vector2 origin = new Vector2(transform.position.x, transform.position.y);
+        Vector2 boxSize = new Vector2(col.bounds.size.x, col.bounds.size.y);
+        Vector2 origin = new Vector2(col.bounds.center.x, col.bounds.min.y);
 
         RaycastHit2D hit = Physics2D.BoxCast(
             origin,
@@ -62,6 +64,8 @@ static public class Utils
 
     public static bool isDetectedNoGroundEdge(Collider2D col, Vector2 velocity, Vector2 edgeCheckDistance, LayerMask layerMask)
     {
+        if (col == null) return false;
+
         float yVelocity = velocity.y;
         bool isNoVelocity = yVelocity < 0.01 && yVelocity > -0.01;
 
@@ -77,10 +81,9 @@ static public class Utils
     public static void DrawDetectedGroundGizmos(Collider2D col, float groundCheckDistance, bool isOnSurface)
     {
         if (col == null) return;
-        Transform transform = col.transform;
 
         // Thin box at feet approach
-        Vector2 origin = new Vector2(transform.position.x, transform.position.y - col.bounds.extents.y);
+        Vector2 origin = new Vector2(col.bounds.center.x, col.bounds.min.y);
         Vector2 boxSize = new Vector2(col.bounds.size.x * 0.9f, 0.05f);
 
         // Draw the cast end box
@@ -91,6 +94,8 @@ static public class Utils
 
     public static void DrawDetectedGroundEdgeGizmos(Collider2D col, Vector2 edgeCheckDistance, bool isOnSurface)
     {
+        if (col == null) return;
+
         Vector2 leftOrigin = new Vector2(col.bounds.min.x - edgeCheckDistance.x, col.bounds.min.y);
         Vector2 rightOrigin = new Vector2(col.bounds.max.x + edgeCheckDistance.x, col.bounds.min.y);
         Gizmos.color = isOnSurface ? Color.green : Color.red;
@@ -98,12 +103,13 @@ static public class Utils
         Gizmos.DrawLine(rightOrigin, new Vector2(rightOrigin.x, rightOrigin.y - edgeCheckDistance.y));
     }
 
-    public static void DrawDetectedWallGizmos(Transform transform, float direction, float wallCheckDistance, bool isDetectedWall)
+    public static void DrawDetectedWallGizmos(Collider2D col, float wallCheckDistance, bool isDetectedWall, float direction)
     {
-        Vector2 origin = transform.position;
+        if (col == null) return;
+
+        Vector2 origin = col.bounds.center;
         Vector2 directionVector = new Vector2(direction, 0);
         Vector2 endPosition = origin + directionVector * wallCheckDistance;
-
         Gizmos.color = isDetectedWall ? Color.green : Color.red;
         Gizmos.DrawLine(origin, endPosition);
     }
