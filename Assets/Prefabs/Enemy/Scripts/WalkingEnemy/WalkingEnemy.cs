@@ -39,6 +39,14 @@ public class WalkingEnemy : Enemy
         isProcessingEdgeReached = collision.isReachedEdge;
     }
 
+    private void OnCollisionEnter2D(Collision2D other)
+    {
+        if (other.gameObject.CompareTag(Constants.Tag.Player))
+        {
+            collision.FlipX();
+        }
+    }
+
     public new void HandleDamageTaken()
     {
         base.HandleDamageTaken();

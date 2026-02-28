@@ -16,4 +16,12 @@ static public class Constants
     {
         public const string Ground = "Ground";
     }
+
+    public static class Screen
+    {
+        public const string MainMenuScreen = "MainMenu";
+        public const string SelectSkinScreen = "SelectSkin";
+        public const string LevelsScreen = "Levels";
+        public const string SettingsScreen = "Settings";
+    }
 }

@@ -31,10 +31,19 @@ public class PlayerJump : MonoBehaviour
         jumpCount++;
     }
 
+    public void SetAvailableJumpCount(int count)
+    {
+        if (count >= 0 && count <= jumpLimit)
+        {
+            jumpCount = count;
+        }
+    }
+
     public void ResetJumpBuffer()
     {
         bufferTime = 0;
     }
+
 
     public void CacheJump()
     {

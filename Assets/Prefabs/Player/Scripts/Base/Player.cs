@@ -96,6 +96,7 @@ public class Player : MonoBehaviour
                 Enemy enemy = other.gameObject.GetComponent<Enemy>();
                 enemy?.HandleDamageTaken();
                 movement.MoveTowards(new Vector2(movement.velocity.x, jump.jumpForce / 1.5f));
+                jump.SetAvailableJumpCount(1);
             }
             else
             {

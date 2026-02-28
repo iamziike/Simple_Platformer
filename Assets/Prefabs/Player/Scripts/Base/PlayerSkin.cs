@@ -27,7 +27,7 @@ public class SkinData
     }
 }
 
-[CreateAssetMenu(fileName = "PlayerSkin", menuName = "CreatePlayerSkin", order = 0)]
+[CreateAssetMenu(fileName = "PlayerSkin", menuName = "ScriptableObjects/CreatePlayerSkin", order = 0)]
 public class PlayerSkin : ScriptableObject
 {
     bool isInitialized = false;
